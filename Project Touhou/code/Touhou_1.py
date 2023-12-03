@@ -5,7 +5,7 @@ import random as rm
 from numpy import size
 import pygame as Pg
 from pygame.locals import *
-from sympy import true
+
 
 Black =         (  0,   0,   0)
 Gray =          (128, 128, 128)
@@ -44,29 +44,12 @@ class Game:
         self.Frame_3.set_colorkey(Black)
         self.found = Pg.image.load("Project Touhou/found/found_1.png").convert()
         Pg.display.set_icon(self.Frame_0)
-    
-    def puntaciones(self, text, size, x, y):
-        font = Pg.font.SysFont("Small Fonts", size, bold=True)
-        text_frame = font.render(text, True, White,Black)
-        text_rect = text_frame.get_rect()
-        text_rect.midtop = (x, y)
-        self.VN.blit(text_frame, text_rect)
-
-    def power_bar(self,x, y, level):
-        longitud = 100
-        alto = 20
-        x = 150
-        y = 420
-        fill = int((level/100)*longitud)
-        border = Pg.Rect(x,y, longitud, alto)
-        fill = Pg.Rect(x, y, fill, alto)
-        Pg.draw.rect(self.VN, (255,0,55), fill)
-        Pg.draw.rect(self.VN, Black, border, 4)
-
-    def Draw_text(self, surface, text. size, x, y):
-        font = Pg.font.SysFont("serif", size = size)
+        
+    def Draw_text(self, surface, text, size, x, y):
+        font = Pg.font.SysFont("serif", size)
         text_surface = font.render(text, True,White)
         text_rect = text_surface.get_rect()
+        text_rect.midtop = (x, y)
         surface.blit(text_surface, text_rect)
 
     def new_game(self):
@@ -75,8 +58,16 @@ class Game:
 
     def draw(self):
         self.VN.blit(self.found, [230,0])
-        self.Draw_text(self.VN, f"puntos: {str(self.pounts)}", 25 , self.size_min[0], 10)
-        self.Draw_text(self.VN, f"niveles: {str(self.level)}", 25 , self.size_min[0], 10)
+        self.Draw_text(self.VN, f"puntos: {str(self.pounts)}", 15 , 630, 20)
+        self.Draw_text(self.VN, f"niveles: {str(self.level)}", 10 , 630, 40)
+
+    # def check_event(self):
+    #     for event in Pg.event.get():
+    #         if event.type == Pg.QUIT:
+    #             Pg.quit()
+    #             sys.exit()
+
+    
 GM = Game()
 
 
@@ -135,6 +126,7 @@ class Player(Pg.sprite.Sprite):
             self.pos_y -= self.velocidad
     def update_sprite(self, keys):
         
+        self.rect = self.rects[self.current_sprite]
         if self.pos_x > 543:
             self.pos_x = 543
         if self.pos_x < 235:
@@ -185,7 +177,7 @@ class Player(Pg.sprite.Sprite):
         if not keys[K_a] or not keys[K_d] or not keys[K_w] or not keys[K_s]:
             self.current_sprite = 0
 
-        self.rect = self.rects[self.current_sprite]
+        
     def shoot(self):
         bullet = Player_Bullets(self.rect.centerx, self.rect.top)
         all_sprites.add(bullet)
@@ -233,10 +225,10 @@ coor_list = []
 coor_list1 = []
 
 all_sprites = Pg.sprite.Group()
-all_sprites.add(player)
+bullets = Pg.sprite.Group()
 enemy = Pg.sprite.Group()
 enemy.add(boss)
-bullets = Pg.sprite.Group()
+all_sprites.add(player)
 
 
 for i in range(200):
@@ -269,14 +261,14 @@ while True:
     Pg.draw.rect(GM.VN, Black,(592.5,  32.5, 196,  26 ))        # [posicion x], [posicion y],  [ancho], [alto]    
 
     all_sprites.update() 
-
-
-      
     
-    # player.rect.topleft = (player.pos_x, player.pos_y)
-    # Ventana.blit(player.image[player.current_sprite], player.rect) 
-    # Ventana.blit(boss.image, boss.rect)
-    all_sprites.draw(GM.VN)
+
+    #GM.draw()
+    
+    player.rect.topleft = (player.pos_x, player.pos_y)
+    GM.VN.blit(player.image[player.current_sprite], player.rect) 
+    GM.VN.blit(boss.image, boss.rect)
+    #   all_sprites.draw(GM.VN)
     
 
 
